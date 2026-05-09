@@ -263,11 +263,12 @@
         </div>
       </div>
       <div class="field-group">
-        <label>จำนวนงวด</label>
+        <label>จำนวนปี</label>
         <div class="input-wrap">
-          <input id="periods" type="number" step="1" min="1" value="120" />
-          <span class="unit">งวด</span>
+          <input id="years" type="number" step="0.25" min="0.25" value="5" />
+          <span class="unit">ปี</span>
         </div>
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:4px;">= <span id="periods-display">120</span> งวด</div>
       </div>
       <div class="field-group">
         <label>งวดต่อปี</label>
@@ -351,8 +352,16 @@
     document.getElementById("principal").addEventListener("input", function () {
       const raw = this.value.replace(/,/g, "");
       if (!isNaN(raw) && raw !== "") {
+        const cursor = this.selectionStart;
         this.value = Number(raw).toLocaleString("en-US");
       }
+    });
+
+    document.getElementById("years").addEventListener("input", function () {
+      const years = parseFloat(this.value) || 0;
+      const ppy = parseInt(document.getElementById("ppy").value) || 24;
+      const periods = Math.round(years * ppy);
+      document.getElementById("periods-display").textContent = periods.toLocaleString("en-US");
     });
 
     document.querySelectorAll("input").forEach(el => {
@@ -362,11 +371,12 @@
     function calculate() {
       const principal = parseFloat(document.getElementById("principal").value.replace(/,/g, ""));
       const rate      = parseFloat(document.getElementById("rate").value);
-      const periods   = parseInt(document.getElementById("periods").value);
+      const years     = parseFloat(document.getElementById("years").value);
       const ppy       = parseInt(document.getElementById("ppy").value);
+      const periods   = Math.round(years * ppy);
 
-      if ([principal, rate, periods, ppy].some(v => isNaN(v)) ||
-          principal <= 0 || rate < 0 || periods < 1 || ppy < 1) {
+      if ([principal, rate, years, ppy].some(v => isNaN(v)) ||
+          principal <= 0 || rate < 0 || years < 0.25 || ppy < 1) {
         alert("กรุณากรอกตัวเลขให้ถูกต้อง");
         return;
       }
