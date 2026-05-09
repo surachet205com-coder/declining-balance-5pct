@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คำนวณดอกเบี้ยลดต้น ลดดอก</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Sarabun", "TH Sarabun New", sans-serif;
+      background: #1e2a3a;
+      color: #e0e8f0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: #7eb8f7;
+      margin-bottom: 16px;
+    }
+
+    /* Input card */
+    .input-card {
+      background: #2a3f5f;
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px 20px;
+      margin-bottom: 12px;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .field label {
+      color: #a0b8d0;
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+
+    .field input {
+      background: #0f1923;
+      border: none;
+      border-radius: 6px;
+      color: #e0e8f0;
+      font-family: "Consolas", monospace;
+      font-size: 0.95rem;
+      padding: 6px 10px;
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+
+    .field input:focus {
+      box-shadow: 0 0 0 2px #2a7ae2;
+    }
+
+    .field input.wide  { width: 130px; }
+    .field input.med   { width: 80px;  }
+    .field input.short { width: 70px;  }
+
+    button#calc-btn {
+      background: #2a7ae2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: "Sarabun", sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 8px 22px;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    button#calc-btn:hover { background: #1a5abf; }
+
+    /* Summary bar */
+    #summary {
+      background: #162030;
+      color: #7eb8f7;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 14px;
+      line-height: 1.7;
+    }
+
+    .summary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 28px;
+    }
+
+    .summary-item span.label { color: #a0b8d0; }
+    .summary-item span.value { color: #7eb8f7; font-family: "Consolas", monospace; font-weight: 700; }
+
+    /* Table container */
+    .table-wrap {
+      background: #0f1923;
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 520px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      font-family: "Consolas", monospace;
+    }
+
+    thead th {
+      background: #2a3f5f;
+      color: #7eb8f7;
+      font-family: "Sarabun", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 10px 14px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr:nth-child(odd)  td { background: #0f1923; }
+    tbody tr:nth-child(even) td { background: #162030; }
+
+    tbody tr:hover td { background: #1e3250; }
+
+    td {
+      padding: 7px 14px;
+      text-align: right;
+      color: #e0e8f0;
+      border-bottom: 1px solid #1a2840;
+    }
+
+    td:first-child { text-align: center; color: #7eb8f7; }
+
+    td.interest { color: #f7a97e; }
+    td.balance  { color: #7ef7a9; }
+
+    /* Empty state */
+    #empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #4a6080;
+      font-size: 1rem;
+    }
+
+    /* Scrollbar */
+    .table-wrap::-webkit-scrollbar { width: 8px; height: 8px; }
+    .table-wrap::-webkit-scrollbar-track { background: #0f1923; }
+    .table-wrap::-webkit-scrollbar-thumb { background: #2a3f5f; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <h1>💰 คำนวณดอกเบี้ยลดต้น ลดดอก</h1>
+
+  <div class="input-card">
+    <div class="field">
+      <label for="principal">เงินต้น (บาท):</label>
+      <input id="principal" class="wide" type="text" value="100,000" />
+    </div>
+    <div class="field">
+      <label for="rate">ดอกเบี้ย/ปี (%):</label>
+      <input id="rate" class="med" type="number" step="0.01" min="0" value="5.0" />
+    </div>
+    <div class="field">
+      <label for="periods">จำนวนงวด:</label>
+      <input id="periods" class="med" type="number" step="1" min="1" value="120" />
+    </div>
+    <div class="field">
+      <label for="ppy">งวด/ปี:</label>
+      <input id="ppy" class="short" type="number" step="1" min="1" value="24" />
+    </div>
+    <button id="calc-btn" onclick="calculate()">คำนวณ ▶</button>
+  </div>
+
+  <div id="summary">
+    <span style="color:#4a6080">กรอกข้อมูลแล้วกด คำนวณ</span>
+  </div>
+
+  <div class="table-wrap">
+    <table id="result-table">
+      <thead>
+        <tr>
+          <th>งวด</th>
+          <th>ตัดต้น (บาท)</th>
+          <th>ดอกเบี้ย (บาท)</th>
+          <th>รวม (บาท)</th>
+          <th>คงเหลือ (บาท)</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr><td colspan="5" id="empty-state">กรอกข้อมูลแล้วกด คำนวณ เพื่อแสดงตาราง</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Format number with commas
+    function fmt(n) {
+      return n.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Allow comma in principal field
+    document.getElementById("principal").addEventListener("input", function () {
+      let pos = this.selectionStart;
+      let raw = this.value.replace(/,/g, "");
+      if (!isNaN(raw) && raw !== "") {
+        let formatted = Number(raw).toLocaleString("en-US");
+        this.value = formatted;
+      }
+    });
+
+    function calculate() {
+      const principalRaw = parseFloat(document.getElementById("principal").value.replace(/,/g, ""));
+      const rate         = parseFloat(document.getElementById("rate").value);
+      const periods      = parseInt(document.getElementById("periods").value);
+      const ppy          = parseInt(document.getElementById("ppy").value);
+
+      if (isNaN(principalRaw) || isNaN(rate) || isNaN(periods) || isNaN(ppy) ||
+          principalRaw <= 0 || rate < 0 || periods < 1 || ppy < 1) {
+        alert("กรุณากรอกตัวเลขให้ถูกต้อง");
+        return;
+      }
+
+      const ratePerPeriod      = (rate / 100) / ppy;
+      const principalPerPeriod = principalRaw / periods;
+
+      let balance       = principalRaw;
+      let totalInterest = 0;
+
+      const tbody = document.getElementById("table-body");
+      tbody.innerHTML = "";
+
+      for (let p = 1; p <= periods; p++) {
+        const interest = balance * ratePerPeriod;
+        const payment  = principalPerPeriod + interest;
+        balance       -= principalPerPeriod;
+        if (Math.abs(balance) < 0.01) balance = 0;
+        totalInterest += interest;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p}</td>
+          <td>${fmt(principalPerPeriod)}</td>
+          <td class="interest">${fmt(interest)}</td>
+          <td>${fmt(payment)}</td>
+          <td class="balance">${fmt(balance)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      const totalPaid   = principalRaw + totalInterest;
+      const firstPayment = principalPerPeriod + principalRaw * ratePerPeriod;
+
+      document.getElementById("summary").innerHTML = `
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="label">ตัดต้น/งวด: </span>
+            <span class="value">${fmt(principalPerPeriod)} บาท</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">งวดแรก: </span>
+            <span class="value">${fmt(firstPayment)} บาท</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">ดอกเบี้ยรวม: </span>
+            <span class="value">${fmt(totalInterest)} บาท</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">ยอดรวม: </span>
+            <span class="value">${fmt(totalPaid)} บาท</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Calculate on Enter key in any input
+    document.querySelectorAll("input").forEach(el => {
+      el.addEventListener("keydown", e => { if (e.key === "Enter") calculate(); });
+    });
+  </script>
+</body>
+</html>
