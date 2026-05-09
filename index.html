@@ -10,18 +10,18 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0d1117;
-      --surface:   #161b22;
-      --surface2:  #1c2433;
-      --border:    #30363d;
+      --bg:        #f0f4f8;
+      --surface:   #ffffff;
+      --surface2:  #e8edf3;
+      --border:    #d0d7de;
       --accent:    #2f81f7;
       --accent2:   #388bfd;
-      --green:     #3fb950;
-      --orange:    #f78166;
-      --yellow:    #e3b341;
-      --purple:    #a371f7;
-      --text:      #e6edf3;
-      --muted:     #8b949e;
+      --green:     #1a7f37;
+      --orange:    #bc4c00;
+      --yellow:    #9a6700;
+      --purple:    #6e40c9;
+      --text:      #1f2328;
+      --muted:     #656d76;
       --radius:    14px;
     }
 
@@ -41,8 +41,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: linear-gradient(135deg, #1f3a5f, #162032);
-      border: 1px solid #2f4a7a;
+      background: linear-gradient(135deg, #dbeafe, #ede9fe);
+      border: 1px solid #bfdbfe;
       border-radius: 100px;
       padding: 6px 18px;
       font-size: 0.82rem;
@@ -54,7 +54,7 @@
     .header h1 {
       font-size: clamp(1.5rem, 4vw, 2.2rem);
       font-weight: 700;
-      background: linear-gradient(135deg, #7eb8f7 0%, #a371f7 100%);
+      background: linear-gradient(135deg, #2f81f7 0%, #6e40c9 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -73,6 +73,7 @@
       padding: 24px;
       max-width: 900px;
       margin: 0 auto 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
 
     .input-grid {
@@ -82,11 +83,7 @@
       margin-bottom: 20px;
     }
 
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
 
     .field-group label {
       font-size: 0.82rem;
@@ -160,9 +157,10 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      transition: border-color 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s;
     }
-    .summary-card:hover { border-color: #404952; }
+    .summary-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .summary-card .sc-icon  { font-size: 1.3rem; margin-bottom: 2px; }
     .summary-card .sc-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
     .summary-card .sc-value { font-family: "Inter", monospace; font-size: 1.25rem; font-weight: 700; line-height: 1.2; }
@@ -193,6 +191,7 @@
       border-radius: var(--radius);
       overflow: auto;
       max-height: 480px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
     .table-wrap::-webkit-scrollbar       { width: 6px; height: 6px; }
     .table-wrap::-webkit-scrollbar-track { background: transparent; }
@@ -217,7 +216,7 @@
     }
     thead th:first-child { text-align: center; }
 
-    tbody tr { border-bottom: 1px solid rgba(48,54,61,0.6); }
+    tbody tr { border-bottom: 1px solid var(--border); }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover td { background: rgba(47,129,247,0.04); }
 
@@ -431,8 +430,8 @@
             {
               label: "ยอดคงเหลือ (บาท)",
               data: chartBalance,
-              borderColor: "#3fb950",
-              backgroundColor: "rgba(63,185,80,0.08)",
+              borderColor: "#1a7f37",
+              backgroundColor: "rgba(26,127,55,0.08)",
               borderWidth: 2,
               pointRadius: 0,
               fill: true,
@@ -442,8 +441,8 @@
             {
               label: "ดอกเบี้ย/งวด (บาท)",
               data: chartInterest,
-              borderColor: "#f78166",
-              backgroundColor: "rgba(247,129,102,0.08)",
+              borderColor: "#bc4c00",
+              backgroundColor: "rgba(188,76,0,0.08)",
               borderWidth: 2,
               pointRadius: 0,
               fill: true,
@@ -457,14 +456,14 @@
           interaction: { mode: "index", intersect: false },
           plugins: {
             legend: {
-              labels: { color: "#8b949e", font: { family: "Sarabun", size: 12 } }
+              labels: { color: "#656d76", font: { family: "Sarabun", size: 12 } }
             },
             tooltip: {
-              backgroundColor: "#1c2433",
-              borderColor: "#30363d",
+              backgroundColor: "#ffffff",
+              borderColor: "#d0d7de",
               borderWidth: 1,
-              titleColor: "#e6edf3",
-              bodyColor: "#8b949e",
+              titleColor: "#1f2328",
+              bodyColor: "#656d76",
               callbacks: {
                 label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString("th-TH", {minimumFractionDigits:2})} บาท`
               }
@@ -472,22 +471,22 @@
           },
           scales: {
             x: {
-              ticks: { color: "#8b949e", font: { size: 11 }, maxTicksLimit: 10 },
-              grid: { color: "rgba(48,54,61,0.5)" }
+              ticks: { color: "#656d76", font: { size: 11 }, maxTicksLimit: 10 },
+              grid: { color: "rgba(208,215,222,0.8)" }
             },
             y: {
               position: "left",
               ticks: {
-                color: "#3fb950",
+                color: "#1a7f37",
                 font: { size: 11 },
                 callback: v => v >= 1000 ? (v/1000).toFixed(0)+"K" : v
               },
-              grid: { color: "rgba(48,54,61,0.5)" }
+              grid: { color: "rgba(208,215,222,0.8)" }
             },
             y1: {
               position: "right",
               ticks: {
-                color: "#f78166",
+                color: "#bc4c00",
                 font: { size: 11 },
                 callback: v => v >= 1000 ? (v/1000).toFixed(0)+"K" : v
               },
